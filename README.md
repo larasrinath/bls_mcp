@@ -132,6 +132,16 @@ The `env` block is optional — omit it to use the API without a key (lower rate
 
 Restart Claude Desktop after saving. The six BLS tools will appear in the tool picker.
 
+## Bundled Skill
+
+This repo includes a [Claude skill](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/skills) at `skills/bls-query/` that teaches Claude how to map natural language queries (e.g. "What's the current CPI?") to the correct BLS series IDs and tools — without guessing.
+
+The skill includes a series catalog covering CPI, unemployment, employment, JOLTS, PPI, wages, productivity, and more (~100 common series IDs).
+
+**To install for Claude Code:** Copy the `skills/bls-query` folder into `~/.claude/skills/`.
+
+**To install for Claude.ai:** Upload the `skills/bls-query` folder via Settings > Capabilities > Skills.
+
 ## Example Prompts
 
 - What is the current unemployment rate? (use `get_popular_series` to find the series, then `get_latest_series`)
@@ -161,6 +171,11 @@ bls_mcp/
 │   └── tools/
 │       ├── series.ts     # get_single_series, get_latest_series, get_multiple_series
 │       └── surveys.ts    # get_popular_series, get_all_surveys, get_survey
+├── skills/
+│   └── bls-query/
+│       ├── SKILL.md      # Query workflow and tool selection guide
+│       └── references/
+│           └── series-catalog.md  # ~100 common series ID mappings
 ├── package.json
 ├── tsconfig.json
 ├── LICENSE
