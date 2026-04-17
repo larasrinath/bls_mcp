@@ -1,22 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { Client, BlsApiError } from "../client.js";
-
-function wrapError(error: unknown): { content: { type: "text"; text: string }[] } {
-  if (error instanceof BlsApiError) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${error.message}${error.isRateLimit ? "\nConsider setting BLS_API_KEY for higher rate limits." : ""}`,
-        },
-      ],
-    };
-  }
-  return {
-    content: [{ type: "text" as const, text: `Unexpected error: ${String(error)}` }],
-  };
-}
+import { Client } from "../client.js";
+import { wrapError } from "./errors.js";
 
 export function registerSurveyTools(server: McpServer, client: Client) {
   server.tool(

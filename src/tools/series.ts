@@ -1,22 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { Client, BlsApiError } from "../client.js";
-
-function wrapError(error: unknown): { content: { type: "text"; text: string }[] } {
-  if (error instanceof BlsApiError) {
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: `Error: ${error.message}${error.isRateLimit ? "\nConsider setting BLS_API_KEY for higher rate limits." : ""}`,
-        },
-      ],
-    };
-  }
-  return {
-    content: [{ type: "text" as const, text: `Unexpected error: ${String(error)}` }],
-  };
-}
+import { Client } from "../client.js";
+import { wrapError, wrapValidationError } from "./errors.js";
 
 const SERIES_ID_PATTERN = /^[A-Z0-9_#-]+$/;
 
@@ -102,6 +87,9 @@ export function registerSeriesTools(server: McpServer, client: Client) {
         .describe("Include aspect data (requires registration key)"),
     },
     async ({ series_ids, start_year, end_year, catalog, calculations, annual_average, aspects }) => {
+      if (start_year !== undefined && end_year !== undefined && Number(start_year) > Number(end_year)) {
+        return wrapValidationError(`start_year (${start_year}) must not be after end_year (${end_year})`);
+      }
       try {
         const data = await client.getSeriesData({
           seriesid: series_ids,
